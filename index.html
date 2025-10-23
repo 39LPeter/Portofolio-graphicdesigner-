@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lilian Peter — Creative Designer</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script src="https://kit.fontawesome.com/a2e0f6ad3a.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --parallax-strength: 0.08; /* Medium default: change to 0.03 (mild) or 0.12 (vivid) */
+    }
+
+    /* Global resets + transitions */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; -webkit-font-smoothing:antialiased; }
+    .theme-transition {
+      transition: background-color 0.5s ease, color 0.5s ease, box-shadow 0.5s ease, backdrop-filter 0.5s ease;
+    }
+
+    /* Fade-in utility */
+    .fade-in { opacity: 0; transform: translateY(28px); transition: all 0.9s cubic-bezier(.2,.9,.3,1); }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* Gradient text style (neutral gradient accent) */
+    .gradient-text {
+      background: linear-gradient(90deg, #3A86FF, #FF595E, #FFD60A);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Glassmorphism utility used site-wide */
+    .glass-card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      transition: transform 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
+    }
+    .glass-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 14px 36px rgba(58,134,255,0.14);
+    }
+
+    /* Project card specifics */
+    .project-card { transition: transform 0.36s ease, box-shadow 0.36s ease; }
+    .project-card:hover { transform: translateY(-8px); box-shadow: 0 14px 36px rgba(58,134,255,0.14); }
+    .project-card img { width: 100%; height: 100%; object-fit: cover; border-radius: 0.75rem; transition: transform 0.35s ease, box-shadow 0.35s ease; }
+    .project-card img:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(0,0,0,0.18); }
+
+    /* Work & About section animated gradient overlays + parallax support */
+    #work, #about {
+      position: relative;
+      overflow: hidden;
+      z-index: 0;
+    }
+    #work::before, #about::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 200%; height: 200%;
+      background: linear-gradient(135deg,
+        rgba(58,134,255,0.10),
+        rgba(255,89,94,0.10),
+        rgba(255,214,10,0.08));
+      background-size: 300% 300%;
+      transform: translateY(var(--offset, 0px));
+      z-index: 0;
+      pointer-events: none;
+    }
+    /* Different animations to be slightly desynchronized */
+    @keyframes gradientMoveA {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes gradientMoveB {
+      0% { background-position: 100% 50%; }
+      50% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+    /* About: slower, lighter */
+    #about::before { animation: gradientMoveA 30s linear infinite; opacity: 0.55; }
+    /* Work: slightly faster, stronger */
+    #work::before { animation: gradientMoveB 20s linear infinite reverse; opacity: 0.7; }
+
+    /* Ensure content stays above overlays */
+    #work > .overlay-content, #about > .overlay-content { position: relative; z-index: 1; }
+
+    /* Dark-mode adjustments for glass to keep readability */
+    html.dark .glass-card { background: rgba(6,7,9,0.48); border: 1px solid rgba(255,255,255,0.06); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
+    html.dark body { background-color: #0E0E10; color: #F3F4F6; }
+
+    /* Responsive utility safe-fallbacks for older browsers */
+    @media (prefers-reduced-motion: reduce) {
+      #work::before, #about::before { animation: none; }
+      .fade-in { transition: none; transform: none; opacity: 1; }
+    }
+
+    /* Footer small print color */
+    footer p { opacity: 0.9; }
+  </style>
+</head>
+<body class="h-full bg-[#FDFBF9] dark:bg-[#0E0E10] text-gray-900 dark:text-gray-100 theme-transition">
+
+  <nav class="fixed top-0 w-full z-50 bg-white/75 dark:bg-gray-900/70 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 theme-transition">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-4">
+      <div class="text-2xl font-extrabold gradient-text">Lilian Peter</div>
+      <div class="hidden md:flex gap-8">
+        <a href="#home" class="hover:text-[#3A86FF] transition-colors">Home</a>
+        <a href="#about" class="hover:text-[#3A86FF] transition-colors">About</a>
+        <a href="#work" class="hover:text-[#3A86FF] transition-colors">My Work</a>
+        <a href="#contact" class="hover:text-[#3A86FF] transition-colors">Contact</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="themeToggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:scale-110 transition-transform" aria-label="Toggle theme">
+          <svg class="w-5 h-5 dark:hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+          <svg class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <section id="home" class="min-h-screen flex flex-col justify-center items-center text-center pt-20 fade-in overlay-content">
+    <div class="relative w-48 h-48 mb-8">
+      <div class="absolute inset-0 bg-gradient-to-br from-[#3A86FF] via-[#FF595E] to-[#FFD60A] rounded-full animate-pulse"></div>
+      <div class="absolute inset-2 rounded-full flex items-center justify-center overflow-hidden bg-white dark:bg-gray-800">
+        <img src="assets/profile.jpg" alt="Profile picture" class="w-full h-full object-cover rounded-full">
+      </div>
+    </div>
+
+    <h1 class="text-5xl md:text-7xl font-extrabold mb-4">Creative <span class="gradient-text">Designer</span></h1>
+    <p class="text-lg md:text-xl mb-8 max-w-3xl mx-auto">Transforming ideas into striking visuals through brand design, motion, and web experiences.</p>
+    <a href="#work" class="px-8 py-3 bg-gradient-to-r from-[#3A86FF] to-[#FF595E] text-white rounded-full font-semibold hover:scale-105 transition-transform">Explore My Work</a>
+  </section>
+
+  <section id="about" class="py-20 fade-in theme-transition">
+    <div class="overlay-content max-w-7xl mx-auto px-4 text-center">
+      <h2 class="text-4xl font-bold mb-6 gradient-text">About Me</h2>
+      <p class="text-lg mb-8 mx-auto max-w-3xl">I’m a self-taught designer focused on brand identity, editorial design, motion graphics and product visualization. I blend concept, craft and storytelling to create visuals that engage and convert.</p>
+
+      <h3 class="text-2xl font-semibold mb-6 gradient-text">Software Skills</h3>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-brands fa-figma text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">Figma</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-solid fa-image text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">Photoshop</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-solid fa-pen-nib text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">Illustrator</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-solid fa-wand-magic-sparkles text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">After Effects</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-solid fa-film text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">Premiere Pro</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-solid fa-cube text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">Blender</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-solid fa-palette text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">Canva</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-brands fa-html5 text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">HTML</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-brands fa-css3-alt text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">CSS</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl text-center">
+          <i class="fa-brands fa-js text-3xl gradient-text" aria-hidden="true"></i>
+          <p class="mt-3 font-semibold">JavaScript</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="work" class="py-20 fade-in">
+    <div class="overlay-content max-w-7xl mx-auto px-4 text-center">
+      <h2 class="text-4xl font-bold mb-8 gradient-text">My Work</h2>
+      <p class="mb-8 text-lg max-w-3xl mx-auto">Selected projects across branding, editorial, packaging, UI, social campaigns, motion and 3D visualization.</p>
+
+      <div class="grid gap-8 md:grid-cols-2">
+        
+        <article class="fade-in project-card glass-card p-6 rounded-2xl text-left">
+          <h3 class="text-2xl font-semibold mb-2 gradient-text">Out-of-Home (OOH) & Large Format Advertising</h3>
+          <p class="mb-4">High-impact billboard and bus stop advertisements designed for maximum visibility and brand recall among commuters and pedestrians.</p>
+
+          <h4 class="text-xl font-semibold mt-4 mb-2">Fanta: Dynamic Orange Refreshment Billboard</h4>
+          <p class="mb-4">This OOH advertisement for Fanta Orange was designed to instantly convey an overwhelming sense of refreshment and effervescence. Utilizing vibrant color contrast and a dynamic composition, the three stacked cans appear to burst with a splash of liquid and fresh orange slices. The design creates a powerful visual gravity that makes the product jump off the billboard, ensuring maximum visibility and instant appetite appeal for pedestrians and commuters. It's a testament to crafting compelling commercial visuals that stop traffic.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/fanta.jpg" alt="Fanta Billboard Mockup" loading="lazy">
+            <img src="assets/Fantapallette.png" alt="Fanta Color Palette" loading="lazy">
+            <img src="assets/fanta.png" alt="Fanta Ad Detail" loading="lazy">
+          </div>
+          <p class="mb-8"><strong>Tools:</strong> Adobe Illustrator, Photoshop, Figma</p>
+
+          <h4 class="text-xl font-semibold mt-4 mb-2">Nescafé: Classic Coffee OOH Campaign</h4>
+          <p class="mb-4">This billboard celebrates the rich heritage and inviting aroma of Nescafé Classic. The design uses warm, sunny lighting and a blurred background to create a cozy, inviting atmosphere that makes the coffee the undeniable focal point. By showcasing raw coffee beans, a spoonful of granules, and the finished product, it tells a complete story of quality from bean to cup. The overall visual balance emphasizes the product's tagline, encouraging consumers to "Slay Every Moment" with a high-quality coffee experience.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/nescafe.jpg" alt="Nescafé Billboard Mockup" loading="lazy">
+            <img src="assets/1.png" alt="Nescafé Product Detail" loading="lazy">
+            <img src="assets/Nescafepall.png" alt="Nescafé Color Palette" loading="lazy">
+          </div>
+          <p><strong>Tools:</strong> Illustrator, Photoshop</p>
+        </article>
+        
+        <article class="fade-in project-card glass-card p-6 rounded-2xl text-left">
+          <h3 class="text-2xl font-semibold mb-2 gradient-text">Event & Holiday Promotion</h3>
+          <p class="mb-4">A series of posters and large-format graphics for religious services and conferences, focusing on clarity, timing, and appropriate visual reverence.</p>
+          
+          <h4 class="text-xl font-semibold mt-4 mb-2">ARISE Conference Speaker Promotion</h4>
+          <p class="mb-4">This striking billboard utilizes warm, radiant colors and a dramatic spotlight effect to build excitement around the "ARISE" conference. The design is strategically focused on **speaker recognition**, featuring clear, professional portraits of four key presenters. The overall composition ensures the event's authority and logistical details are communicated at a glance to potential attendees.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/arise (1).jpg" alt="ARISE Billboard Mockup" loading="lazy">
+            <img src="assets/project2-img2.jpg" alt="ARISE Detail 2" loading="lazy">
+            <img src="assets/project2-img3.jpg" alt="ARISE Detail 3" loading="lazy">
+          </div>
+          <p class="mb-8"><strong>Tools:</strong> Photoshop, Illustrator</p>
+
+          <h4 class="text-xl font-semibold mt-4 mb-2">Good Friday Cross-Platform Greeting</h4>
+          <p class="mb-4">This design serves as a respectful seasonal greeting while simultaneously reinforcing the client's multi-platform brand presence. The deep, rich purple backdrop conveys a sense of solemnity. The bottom of the design features a clean, organized display of social media handles, ensuring brand consistency and directing audience traffic across various digital channels.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/goodfri.jpg" alt="Good Friday Billboard Mockup" loading="lazy">
+            <img src="assets/Goodfridaypallette.png" alt="Good Friday Color Palette" loading="lazy">
+            <img src="assets/goodfriday.jpg" alt="Good Friday Detail" loading="lazy">
+          </div>
+          <p class="mb-8"><strong>Tools:</strong> Photoshop, Illustrator</p>
+          
+          <h4 class="text-xl font-semibold mt-4 mb-2">Ash Wednesday Service Announcement</h4>
+          <p class="mb-4">This design successfully merges a traditional religious theme with a clean, modern aesthetic for effective event promotion. The deep purple and textured background provides a sense of reverence, while the clear, bold typography ensures essential information is immediately accessible. The central visual delivers the service's message with dignity and clarity.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/2.jpg" alt="Ash Wednesday Poster Mockup" loading="lazy">
+            <img src="assets/2.png" alt="Ash Wednesday Detail 1" loading="lazy">
+            <img src="assets/ashwedpallette.png" alt="Ash Wednesday Color Palette" loading="lazy">
+          </div>
+          <p class="mb-8"><strong>Tools:</strong> Canva, Pixxellab</p>
+          
+          <h4 class="text-xl font-semibold mt-4 mb-2">Happy Easter Resurrection Celebration</h4>
+          <p class="mb-4">This poster is a powerful declaration celebrating the core message of Easter. It utilizes bold, impactful typography to ensure the message "CHRIST HAS RISEN" dominates the composition. All essential event information (Location, Date, Time) is placed clearly, making it a highly effective promotional piece for a major church service.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/happyeaster.jpg" alt="Happy Easter Poster Mockup" loading="lazy">
+            <img src="assets/Easter.png" alt="Easter Detail 1" loading="lazy">
+            <img src="assets/Easterpallette.png" alt="Easter Color Palette" loading="lazy">
+          </div>
+          <p><strong>Tools:</strong> Photoshop, Illustrator</p>     
+        </article>
+
+        <article class="fade-in project-card glass-card p-6 rounded-2xl text-left">
+          <h3 class="text-2xl font-semibold mb-2 gradient-text">Branding & Logo Design</h3>
+          <p class="mb-4">Developing versatile and memorable brand identities that translate seamlessly across print, digital, and merchandise.</p>
+          
+          <h4 class="text-xl font-semibold mt-4 mb-2">Mawia Diaries: Personal Brand Identity</h4>
+          <p class="mb-4">This project showcases the development of a simple yet memorable brand identity for "Mawia Diaries." The logo uses clean, modern typography and a subtle heart icon to convey a personal, emotional connection.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/mawiadiary.jpg" alt="Mawia Diaries Logo" loading="lazy">
+            <img src="assets/diary.png" alt="Mawia Diaries Detail 1" loading="lazy">
+            <img src="assets/diarry.png" alt="Mawia Diaries Detail 2" loading="lazy">
+            <img src="assets/diarypallette.png" alt="Mawia Diaries Color Palette" loading="lazy">
+          </div>
+          <p class="mb-8"><strong>Tools:</strong> Illustrator, Photoshop</p>
+          
+          <h4 class="text-xl font-semibold mt-4 mb-2">Mawia Diaries: Merchandise Application</h4>
+          <p class="mb-4">The logo is successfully applied to a canvas tote bag mockup, highlighting the ability to create brand assets that translate successfully across different mediums, from digital graphics to physical merchandise.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/diary.jpg" alt="Mawia Diaries Tote Bag Mockup" loading="lazy">
+            <img src="assets/diary.png" alt="Mawia Diaries Detail" loading="lazy">
+          </div>
+          <p class="mb-8"><strong>Tools:</strong> Illustrator, Photoshop</p>
+
+          <h4 class="text-xl font-semibold mt-4 mb-2">Corporate Business Card Design</h4>
+          <p class="mb-4">This corporate business card design was created to represent a professional web developer with a clean and modern visual identity. The layout features a balanced composition of geometric shapes, bold typography, and a refined monochrome color palette to convey professionalism and clarity. The circular motif symbolizes connectivity and innovation, while the use of black, grey, and white enhances contrast and visual harmony. Overall, the design achieves a sophisticated and memorable look that reflects both creativity and technical expertise.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/businesscard.png" alt="Business Card Front" loading="lazy">
+            <img src="assets/card.png" alt="Business Card Back" loading="lazy">
+            <img src="assets/Businesscardpallette.png" alt="Business Card Color Palette" loading="lazy">
+          </div>
+          <p><strong>Tools:</strong> Illustrator, Photoshop</p>
+        </article>
+
+        <article class="fade-in project-card glass-card p-6 rounded-2xl text-left">
+          <h3 class="text-2xl font-semibold mb-2 gradient-text">Product Marketing Graphics</h3>
+          <p class="mb-4">Digital and print graphics focused on driving sales through visual appetite appeal, highlighting product features, and communicating value.</p>
+          
+          <h4 class="text-xl font-semibold mt-4 mb-2">Frutz: Vibrant Tropical Juice Campaign</h4>
+          <p class="mb-4">Created for a youthful market, this campaign graphic is bursting with energy and flavor. The "Rock with Frutz" headline and smiling face icon set a fun, playful tone, while the dynamic water splash effect with floating fresh fruits instantly communicates natural ingredients and intense flavor. By showcasing all six product varieties side-by-side, the design effectively highlights the diversity of choice. The prominent price callout of "Ksh 75" adds a strong layer of retail urgency and value proposition.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/fruitz.jpg" alt="Frutz Ad Mockup" loading="lazy">
+            <img src="assets/project3-img2.jpg" alt="Frutz Detail 2" loading="lazy">
+            <img src="assets/project3-img3.jpg" alt="Frutz Detail 3" loading="lazy">
+          </div>
+          <p class="mb-8"><strong>Tools:</strong> Illustrator, Photoshop</p>
+
+          <h4 class="text-xl font-semibold mb-2 gradient-text">Social Media Campaign (Menu Design)</h4>
+          <p class="mb-4">This project presents a modern and elegant food and beverage menu for Hotel’s Africa. Featuring a dark textured background with gold typography, it conveys luxury and sophistication. A circular image frame highlights the dishes, enhancing visual appeal and connection. The clean, minimal layout ensures clarity for key details like delivery, location, and offers, reflecting the hotel’s refined and customer-focused brand identity.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/menuu.png" alt="Hotel Menu Design 1" loading="lazy">
+            <img src="assets/menu (2).png" alt="Hotel Menu Design 2" loading="lazy">
+            <img src="assets/Menucir.png" alt="Hotel Menu Detail" loading="lazy">
+          </div>
+          <p class="mb-8"><strong>Tools:</strong> Canva, Photoshop</p>
+          
+          <h4 class="text-xl font-semibold mb-2 gradient-text">Social Media Campaign (Restaurant Menu)</h4>
+          <p class="mb-4">This menu design for Maasai Lounge showcases authentic East African cuisine through a bold and elegant layout. The deep black background enhances the vibrant food imagery, while geometric photo frames add a dynamic and modern touch. Bright accent colors and clean typography convey freshness and professionalism, creating a balanced blend of cultural authenticity and contemporary restaurant branding suitable for both print and digital use.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/menu.png" alt="Maasai Lounge Menu 1" loading="lazy">
+            <img src="assets/menu (1).png" alt="Maasai Lounge Menu 2" loading="lazy">
+            <img src="assets/Menupallette.png" alt="Maasai Lounge Color Palette" loading="lazy">
+          </div>
+          <p><strong>Tools:</strong> Canva, Pixellab</p>
+        </article>
+        
+        <article class="fade-in project-card glass-card p-6 rounded-2xl text-left">
+          <h3 class="text-2xl font-semibold mb-2 gradient-text">Motion Graphics Animation</h3>
+          <p class="mb-4">Animated typography and logo transitions built for social ads and product reveals — dynamic timing and clean motion curves.</p>
+          <video id="animationVideo2" class="w-full h-[600px] rounded-2xl shadow-lg autoplay-video mt-4" muted playsinline preload="none" loading="lazy">
+            <source src="assets/ROLLSROYCE.mp4" type="video/mp4">
+            Your browser does not support video playback.
+          </video>
+          <p class="mt-2 mb-8"><strong>Tools:</strong> After Effects, Premiere Pro</p>
+
+          <video id="animationVideo3" class="w-full h-[600px] rounded-2xl shadow-lg autoplay-video mt-4" muted playsinline preload="none" loading="lazy">
+            <source src="assets/SKUL MAGAZ.mp4" type="video/mp4">
+            Your browser does not support video playback.
+          </video>
+          <p class="mt-2 mb-8"><strong>Tools:</strong> After Effects, Premiere Pro</p>
+          
+          <video id="animationVideo4" class="w-full h-[600px] rounded-2xl shadow-lg autoplay-video mt-4" muted playsinline preload="none" loading="lazy">
+            <source src="assets/Travel poster.mp4" type="video/mp4">
+            Your browser does not support video playback.
+          </video>
+          <p class="mt-2"><strong>Tools:</strong> After Effects, Premiere Pro</p>
+        </article>
+
+        <article class="fade-in project-card glass-card p-6 rounded-2xl text-left">
+          <h3 class="text-2xl font-semibold mb-2 gradient-text">Web UI Layout</h3>
+          <p class="mb-4">Modern responsive layout for a design studio—focus on hierarchy, whitespace and accessible interactions across devices.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/project4-img1.jpg" alt="Project4 image 1" loading="lazy">
+            <img src="assets/project4-img2.jpg" alt="Project4 image 2" loading="lazy">
+            <img src="assets/project4-img3.jpg" alt="Project4 image 3" loading="lazy">
+          </div>
+          <p class="mb-8"><strong>Tools:</strong> Figma, HTML, CSS</p>
+          
+          <h3 class="text-2xl font-semibold mb-2 gradient-text">3D Product Visualization</h3>
+          <p class="mb-4">Photorealistic 3D mockups and rendered scenes emphasizing materiality, lighting and composition for product marketing.</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <img src="assets/project7-img1.jpg" alt="Project7 image 1" loading="lazy">
+            <img src="assets/project7-img2.jpg" alt="Project7 image 2" loading="lazy">
+            <img src="assets/project7-img3.jpg" alt="Project7 image 3" loading="lazy">
+          </div>
+          <p><strong>Tools:</strong> Blender, Photoshop</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="animation" class="py-20 fade-in bg-gradient-to-br from-[#0E0E10] via-[#1B1F3B] to-[#0E0E10] text-white">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <h2 class="text-4xl font-bold mb-6 gradient-text">Featured Motion Design</h2>
+      <p class="mb-6 max-w-3xl mx-auto">A dynamic exploration of motion graphics blending rhythm, color and storytelling—showing an integrated approach to motion for brands.</p>
+      
+      <video id="animationVideo" class="w-full h-[600px] rounded-2xl shadow-lg autoplay-video" muted playsinline preload="none" loading="lazy">
+        <source src="assets/Swimming with nemo.mp4" type="video/mp4">
+        Your browser does not support video playback.
+      </video>
+      <p class="mt-4 text-gray-300"><strong>Tools Used:</strong> After Effects · Premiere Pro · Photoshop</p>
+    </div>
+  </section>
+
+  <section id="contact" class="py-20 fade-in bg-white/80 dark:bg-gray-900/60 theme-transition">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <h2 class="text-4xl font-bold mb-6 gradient-text">Let's Work Together</h2>
+      <p class="mb-6">I’m available for freelance and collaborative projects. Reach out and let’s build something that communicates your vision.</p>
+
+      <div class="space-y-3 mb-6">
+        <p>Email: <a class="text-[#3A86FF] hover:underline" href="mailto:lilianmawia948@gmail.com">lilianmawia948@gmail.com</a></p>
+        <p>Phone: <a class="text-[#FF595E] hover:underline" href="tel:+254793818077">+254 793818077</a></p>
+        <p>WhatsApp: <a class="text-green-500 hover:underline" href="https://wa.me/254793818077" target="_blank">+254 793818077 (Message Me)</a></p>
+      </div>
+
+      <div class="flex justify-center gap-6">
+        <a class="glass-card p-3 rounded-full hover:scale-110 transition-transform" href="https://behance.net/yourname" aria-label="Behance">
+          <i class="fab fa-behance text-2xl gradient-text"></i>
+        </a>
+        <a class="glass-card p-3 rounded-full hover:scale-110 transition-transform" href="https://dribbble.com/yourname" aria-label="Dribbble">
+          <i class="fab fa-dribbble text-2xl gradient-text"></i>
+        </a>
+        <a class="glass-card p-3 rounded-full hover:scale-110 transition-transform" href="https://linkedin.com/in/yourname" aria-label="LinkedIn">
+          <i class="fab fa-linkedin text-2xl gradient-text"></i>
+        </a>
+        <a class="glass-card p-3 rounded-full hover:scale-110 transition-transform" href="https://instagram.com/yourname" aria-label="Instagram">
+          <i class="fab fa-instagram text-2xl gradient-text"></i>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-8 bg-[#1B1F3B] text-white text-center">
+    <div class="max-w-7xl mx-auto px-4">
+      <p class="text-sm">&copy; 2025 Lilian Peter. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      // optional: persist preference
+      try { localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light'); } catch(e){}
+    });
+    // On load, restore theme if set
+    (function restoreTheme(){
+      try {
+        const t = localStorage.getItem('theme');
+        if(t === 'dark') document.documentElement.classList.add('dark');
+      } catch(e){}
+    })();
+
+    // IntersectionObserver for fade-in staggered animations
+    const fadeElements = document.querySelectorAll('.fade-in');
+    const fadeObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach((entry) => {
+        if(entry.isIntersecting) {
+          // small stagger based on vertical position
+          const rect = entry.target.getBoundingClientRect();
+          const delay = Math.min(Math.max((rect.top / window.innerHeight) * 300, 0), 400);
+          setTimeout(() => entry.target.classList.add('visible'), delay);
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    fadeElements.forEach(el => fadeObserver.observe(el));
+
+    // Parallax: update CSS variable based on scroll; strength is set in :root (--parallax-strength)
+    function updateParallax() {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const strength = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--parallax-strength')) || 0.08;
+      // subtle per-frame smoothing
+      document.documentElement.style.setProperty('--offset', `${scrollTop * strength}px`);
+    }
+    // Throttle via requestAnimationFrame
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if(!ticking) {
+        window.requestAnimationFrame(() => {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+    // initial call
+    updateParallax();
+
+    // EDIT: Updated this function to find ALL videos with the .autoplay-video class
+    // Autoplay muted video when in view, pause when out
+    (function videoAutoPlayObserver(){
+      const videos = document.querySelectorAll('.autoplay-video');
+      if(videos.length === 0) return;
+
+      const vObserver = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          const video = e.target; // Get the specific video
+          if(e.isIntersecting) {
+            video.muted = true;
+            video.playsInline = true;
+            // play (may require user gesture in some browsers if not muted)
+            video.play().catch(() => {/* ignore play errors */});
+          } else {
+            video.pause();
+          }
+        });
+      }, { threshold: 0.5 }); // Start when 50% of the video is in view
+
+      // Observe each video found
+      videos.forEach(video => {
+        vObserver.observe(video);
+      });
+    })();
+
+    // Smooth scroll for internal anchors
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const href = a.getAttribute('href');
+        if(href.length > 1) {
+          e.preventDefault();
+          const el = document.querySelector(href);
+          if(el) el.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+      });
+    });
+
+    // Accessibility: prefer-reduced-motion respect (already in CSS via @media)
+  </script>
+</body>
+</html>
