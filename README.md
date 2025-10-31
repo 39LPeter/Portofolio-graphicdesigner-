@@ -25,7 +25,7 @@ Here are some featured works from my collection:
 | Preview | Description |
 |:--:|--|
 | ![Logo Design](assets/diary.png) | **Minimalist Logo Concept** — A clean and modern brand identity for a diary company. |
-| ![Brand Kit](assets/brandkit.png) | **Complete Brand Kit** — Color palette, typography system, and logo variations. |
+| ![Brand Kit](assets/diarypallette.png) | **Complete Brand Kit** — Color palette, typography system, and logo variations. |
 
 ---
 
