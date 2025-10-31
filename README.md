@@ -33,17 +33,17 @@ Here are some featured works from my collection:
 
 | Preview | Description |
 |:--:|--|
-| ![Event Poster](assets/posters/poster1.png) | **Concert Poster Series** — Vibrant event posters emphasizing typography and motion. |
-| ![Movie Poster](assets/posters/poster2.png) | **Film-Themed Poster** — Blending cinematic tones with strong visual hierarchy. |
+| ![Event Poster](assets/ash-wed.jpģ) | **Poster Series** — Vibrant event posters emphasizing typography and motion. |
+| ![Menu Poster](assets/posters/menu (2).png) | **Menu- Poster** — Blending contrast tones with strong visual hierarchy. |
 
 ---
 
-### 📱 Social Media Campaigns
+### 📱 Product Design
 
 | Preview | Description |
 |:--:|--|
-| ![Social Media Ad](assets/social/ad1.png) | **Instagram Carousel Design** — Clean and engaging layout for brand awareness. |
-| ![Social Template](assets/social/template.png) | **Social Media Template Pack** — Reusable post templates for content marketing. |
+| ![Social Media Ad](assets/fanta.jpg) | **Instagram Carousel Design** — Clean and engaging layout for product. |
+| ![Mockup Template](assets/fanta.png) | **Mockup Design** — Viewing  product posters  for content marketing. |
 
 ---
 
